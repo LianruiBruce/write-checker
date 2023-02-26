@@ -1,0 +1,25 @@
+{
+  "name": "write-checker",
+  "version": "1.0.0",
+  "description": "Our first full-stack project",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LianruiBruce/write-checker.git"
+  },
+  "keywords": [
+    "full-stack",
+    "write-checker",
+    "openai-api"
+  ],
+  "author": "Lianrui Geng, Jingbo Su",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LianruiBruce/write-checker/issues"
+  },
+  "homepage": "https://github.com/LianruiBruce/write-checker#readme"
+}
