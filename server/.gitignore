@@ -3,3 +3,6 @@
 .idea
 /node_modules
 .env
+middleware/ErrorHandler.js
+middleware/NotFound.js
+middleware/Wrapper.js
