@@ -14,8 +14,6 @@ app.use('/api/v1/checker', checker)
 // app.post('api/v1/checker')
 // app.patch('/api/v1/checker/:id')
 // app.delete('/api/v1/checker/:id')
-// app.get('/api/v1/checker/:resp')
-// app.post('/api/v1/checker/:resp')
 
 const run = async () => {
   try {

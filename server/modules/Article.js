@@ -2,7 +2,6 @@ const {Schema, model} = require('mongoose')
 
 const articleSchema = new Schema({
   build_date: Date,
-  response_id: String,
   is_checked: {
     type: Boolean,
     default: false
@@ -22,6 +21,12 @@ const articleSchema = new Schema({
     trim: true,
     maxLength: [50000, 'content cannot be more than 50,000 characters'],
     required: true
+  },
+  response: {
+    type: String,
+    trim: true,
+    maxLength: [50000, 'response cannot be more than 50,000 characters'],
+    required: false
   }
 })
 

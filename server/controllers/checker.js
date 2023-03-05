@@ -1,6 +1,9 @@
-const User = require('../modules/User')
+// const User = require('../modules/User')
 const Article = require('../modules/Article')
-const Response = require('../modules/Response')
+// const Response = require('../modules/Response')
+const GPT = require('../controllers/gpt')
+const {response} = require("express");
+const {stringify} = require("nodemon/lib/utils");
 
 /* Queries of mongoose models
  * Model.deleteMany()
@@ -22,14 +25,21 @@ const Response = require('../modules/Response')
 
 const createArticle = async (req, res) => {
   try {
+    if (!req.body) {
+      res.status(500).json({msg: 'No Request!'})
+      return
+    }
+    // req.body.response = await GPT(req.body.topic, req.body.content)
+    const completion = await GPT(req.body.topic.toString(), req.body.content.toString())
+    console.log(completion.data)
     const article = await Article.create(req.body)
-    res.status(201).json({article})
+    res.status(201).json({completion})
   } catch (err) {
     res.status(500).json({msg: err})
   }
 }
 
-const getAllArticlesId = async (req, res) => {
+const getAllArticles = async (req, res) => {
   try {
     const articles = await Article.find({})
       .limit(10).sort({build_time: -1})
@@ -52,8 +62,10 @@ const getAnArticle = async (req, res) => {
     }
     const topic = article.topic
     const content = article.content
-    const res_id = article.response_id
-    const response = Response.findOne({_id: res_id}).response
+    // const res_id = article.response_id
+    // const res_body = Response.findOne({_id: res_id})
+    // const response = res_body.response
+    const response = article.response
     if (!response) {
       return res.status(404).json({msg: 'Not Found the Response'})
     }
@@ -96,14 +108,30 @@ const deleteArticle = async (req, res) => {
   }
 }
 
+/*
 const createResponse = (req, res) => {
-  res.send('Hi, there')
+  try {
+    const response = Response.create(req.body)
+    res.status(201).json({response})
+  } catch (err) {
+    res.status(500).json({msg: err})
+  }
 }
 
 const getResponse = (req, res) => {
-  res.send('Hi, there')
+  try {
+    const {id: responseId} = req.params
+    const response = Response.findOne({_id: responseId})
+    if (!response) {
+      res.status(404).json({msg: 'Not Found the Response'})
+    }
+    res.status(200).json({response})
+  } catch (err) {
+    res.status(500).json({msg: err})
+  }
 }
+*/
 
 module.exports = {
-  createArticle, getAllArticlesId, getAnArticle, updateArticle, deleteArticle, createResponse, getResponse
+  createArticle, getAllArticles, getAnArticle, updateArticle, deleteArticle//, createResponse, getResponse
 }
