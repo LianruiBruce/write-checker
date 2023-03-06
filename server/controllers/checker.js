@@ -4,6 +4,7 @@ const Article = require('../modules/Article')
 const GPT = require('../controllers/gpt')
 const {response} = require("express");
 const {stringify} = require("nodemon/lib/utils");
+const {Commands} = require('./command');
 
 /* Queries of mongoose models
  * Model.deleteMany()
@@ -30,8 +31,10 @@ const createArticle = async (req, res) => {
       return
     }
     // req.body.response = await GPT(req.body.topic, req.body.content)
-    const completion = await GPT(req.body.topic.toString(), req.body.content.toString())
-    console.log(completion.data)
+    const cmd = Commands(req.body.topic, req.body.content)
+    const completion = await GPT(cmd.toString())
+    console.log(completion)
+
     const article = await Article.create(req.body)
     res.status(201).json({completion})
   } catch (err) {
