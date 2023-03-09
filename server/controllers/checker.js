@@ -1,10 +1,10 @@
 // const User = require('../modules/User')
-const Article = require('../modules/Article')
+const Article = require("../modules/Article");
 // const Response = require('../modules/Response')
-const GPT = require('../controllers/gpt')
-const {response} = require("express");
-const {stringify} = require("nodemon/lib/utils");
-const {Commands} = require('./command');
+const { gptGetResponse, gptGetTitle } = require("../controllers/gpt");
+const { response } = require("express");
+const { stringify } = require("nodemon/lib/utils");
+const { getCommands, getTitle } = require("./command");
 
 /* Queries of mongoose models
  * Model.deleteMany()
@@ -22,94 +22,105 @@ const {Commands} = require('./command');
  * Model.replaceOne()
  * Model.updateMany()
  * Model.updateOne()
-* */
+ * */
 
 const createArticle = async (req, res) => {
   try {
     if (!req.body) {
-      res.status(500).json({msg: 'No Request!'})
-      return
+      res.status(500).json({ msg: "No Request!" });
+      return;
     }
     // req.body.response = await GPT(req.body.topic, req.body.content)
-    const cmd = Commands(req.body.topic, req.body.content)
-    const completion = await GPT(cmd.toString())
-    console.log(completion)
+    const topic = req.body.topic.toString();
+    const content = req.body.content.toString();
+    // console.log(req.body);
+    const response = await gptGetResponse(getCommands(topic, content));
+    const title = await gptGetTitle(getTitle(topic));
 
-    const article = await Article.create(req.body)
-    res.status(201).json({completion})
+    console.log(response, title);
+
+    const article = await Article.create({
+      build_date: Date.now(),
+      is_checked: true,
+      is_deleted: false,
+      topic: topic,
+      content: content,
+      response: response,
+      title: title,
+    });
+    res.status(201).json(article);
   } catch (err) {
-    res.status(500).json({msg: err})
+    res.status(500).json({ msg: err });
   }
-}
+};
 
 const getAllArticles = async (req, res) => {
   try {
-    const articles = await Article.find({})
-      .limit(10).sort({build_time: -1})
-    const ids = articles.map(art => art._id.toString())
-    res.status(200).json({articles})    // ids
-    // ids[0], ids[1], ...
-    // use map to return an array
-    // should use toString method and jsonify the result
+    const articles = await Article.find({}).limit(12).sort({ build_time: -1 });
+    res.status(200).json(articles);
   } catch (err) {
-    res.status(500).json({msg: err})
+    res.status(500).json({ msg: err });
   }
-}
+};
 
 const getAnArticle = async (req, res) => {
   try {
-    const {id: articleId} = req.params
-    const article = await Article.findOne({_id: articleId})
+    const { id: articleId } = req.params;
+    const article = await Article.findOne({ _id: articleId });
     if (!article) {
-      return res.status(404).json({msg: 'Not Found the Article'})
+      return res.status(404).json({ msg: "Not Found the Article" });
     }
-    const topic = article.topic
-    const content = article.content
+    const topic = article.topic;
+    const content = article.content;
     // const res_id = article.response_id
     // const res_body = Response.findOne({_id: res_id})
     // const response = res_body.response
-    const response = article.response
+    const response = article.response;
     if (!response) {
-      return res.status(404).json({msg: 'Not Found the Response'})
+      return res.status(404).json({ msg: "Not Found the Response" });
     }
     res.status(200).json({
       topic: topic,
       content: content,
-      response: response
-    })
+      response: response,
+    });
   } catch (err) {
-    res.status(500).json({msg: err})
+    res.status(500).json({ msg: err });
   }
-}
+};
 
 const updateArticle = async (req, res) => {
   try {
-    const {id: articleId} = req.params
-    const article = await Article.findOneAndUpdate({_id: articleId}, req.body, {
-      new: true,
-      runValidators: true
-    })
+    const { id: articleId } = req.params;
+    const article = await Article.findOneAndUpdate(
+      { _id: articleId },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!article) {
-      return res.status(404).json({msg: 'Not Found the Article'})
+      return res.status(404).json({ msg: "Not Found the Article" });
     }
-    res.status(200).json({article})
+    res.status(200).json({ article });
   } catch (err) {
-    res.status(500).json({msg: err})
+    res.status(500).json({ msg: err });
   }
-}
+};
 
 const deleteArticle = async (req, res) => {
   try {
-    const {id: articleId} = req.params
-    const article = await Article.findOneAndDelete({_id: articleId})
+    const { id: articleId } = req.params;
+    const article = await Article.findOneAndDelete({ _id: articleId });
     if (!article) {
-      return res.status(404).json({msg: 'Not Found the Article'})
+      return res.status(404).json({ msg: "Not Found the Article" });
     }
-    res.status(200).json({msg: 'Delete Successfully'})
+    res.status(200).json({ msg: "Delete Successfully" });
   } catch (err) {
-    res.status(500).json({msg: err})
+    res.status(500).json({ msg: err });
   }
-}
+};
 
 /*
 const createResponse = (req, res) => {
@@ -136,5 +147,9 @@ const getResponse = (req, res) => {
 */
 
 module.exports = {
-  createArticle, getAllArticles, getAnArticle, updateArticle, deleteArticle//, createResponse, getResponse
-}
+  createArticle,
+  getAllArticles,
+  getAnArticle,
+  updateArticle,
+  deleteArticle, //, createResponse, getResponse
+};

@@ -6,4 +6,3 @@
 middleware/ErrorHandler.js
 middleware/NotFound.js
 middleware/Wrapper.js
-controllers/command.js

@@ -1,14 +1,21 @@
-const express = require('express')
-const app = express()
+const express = require("express");
+const app = express();
 
-const connectDB = require('./db/connect')
-const checker = require('./routes/checker')
-require('dotenv').config()
+const connectDB = require("./db/connect");
+const checker = require("./routes/checker");
+require("dotenv").config();
 
-const PORT = 2023
+const PORT = 2023;
 
-app.use(express.json())
-app.use('/api/v1/checker', checker)
+const cors = require("cors");
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
+app.use(express.json());
+app.use("/api/v1/checker", checker);
 
 // app.get('/api/v1/checker')
 // app.post('api/v1/checker')
@@ -17,13 +24,13 @@ app.use('/api/v1/checker', checker)
 
 const run = async () => {
   try {
-    await connectDB(process.env.MONGO_URI)
+    await connectDB(process.env.MONGO_URI);
     app.listen(PORT, () => {
-      console.log(`Server is listening on port ${PORT}...`)
-    })
+      console.log(`Server is listening on port ${PORT}...`);
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
-run()
+run();
