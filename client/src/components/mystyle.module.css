@@ -1,0 +1,24 @@
+.home_input_1 {
+  position: absolute;
+  width: 750px;
+  height: 250px;
+  left: calc(50% - 800px / 2);
+  top: calc(50% - 320px / 2 - 193px);
+  background: #d9d9d9;
+}
+.home_input_2 {
+  position: absolute;
+  width: 750px;
+  height: 400px;
+  left: calc(50% - 800px / 2);
+  top: calc(50% - 500px / 2 + 200px);
+  background: #d9d9d9;
+}
+.submit_btn {
+  position: absolute;
+  width: 120px;
+  height: 40px;
+  left: 68%;
+  top: 91%;
+  background: #1782ff;
+}
